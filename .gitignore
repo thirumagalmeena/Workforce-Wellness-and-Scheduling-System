@@ -27,5 +27,5 @@ build/
 dist/
 *.egg-info/
 
-# Node (if you have frontend)
+# Node.js
 node_modules/

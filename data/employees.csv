@@ -1,0 +1,5 @@
+employee_id,name,skills,available_from,available_to,max_hours_per_day,preferred_tasks
+1,Alice,python|ml,9,17,6,data_analysis
+2,Bob,testing|automation,9,17,7,testing
+3,Carol,data_analysis|sql,10,18,6,data_analysis
+4,David,python|backend,9,17,8,backend

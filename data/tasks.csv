@@ -1,0 +1,6 @@
+task_id,task_name,required_skill,duration,deadline,priority
+1,Data Cleaning,python,2,12,3
+2,Model Training,ml,3,17,5
+3,API Testing,testing,2,15,4
+4,Report Generation,data_analysis,2,16,3
+5,Database Query,sql,1,14,2

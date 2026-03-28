@@ -29,9 +29,11 @@ def priority_penalty(schedule, tasks):
     return penalty
 
 
-def schedule_cost(schedule, employees, tasks):
+def schedule_cost(schedule, employees, tasks, fairness_tracker=None):
     cost = 0
     cost += workload_imbalance(schedule, employees)
     cost += deadline_penalty(schedule, tasks)
     cost += priority_penalty(schedule, tasks)
+    if fairness_tracker is not None:
+        cost += fairness_tracker.fairness_penalty(schedule, tasks)
     return cost

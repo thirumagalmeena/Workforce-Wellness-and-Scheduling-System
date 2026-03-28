@@ -27,3 +27,24 @@ def check_overlap(employee, schedule, start, end):
 
 def check_deadline(task, end):
     return end <= task["deadline"]
+
+
+def check_weekly_hours(employee, duration, weekly_hours_used: dict, max_weekly: float = 40.0) -> bool:
+    """
+    Returns False if assigning this task would push the employee over their
+    max weekly hours. weekly_hours_used is {emp_id: hours_so_far}.
+    """
+    used = weekly_hours_used.get(employee["id"], 0.0)
+    return (used + duration) <= max_weekly
+
+
+def check_consecutive_shifts(employee, wellness_states: dict, max_consecutive: int = 5) -> bool:
+    """
+    Returns False if the employee has already hit the consecutive shift limit
+    (i.e. they need a mandatory break day).
+    wellness_states is {emp_id: wellness_state_dict}.
+    """
+    ws = wellness_states.get(employee["id"])
+    if ws is None:
+        return True
+    return ws["consecutive_shifts"] < max_consecutive

@@ -4,3 +4,8 @@ task_id,task_name,required_skill,duration,deadline,priority
 3,API Testing,testing,2,15,4
 4,Report Generation,data_analysis,2,16,3
 5,Database Query,sql,1,14,2
+6,Critical Hotfix,python,3,13,5
+7,System Monitoring,devops,2,17,1
+8,Threat Analysis,security,4,16,4
+9,Integration Tests,testing,3,14,4
+10,Legacy Code Review,python,4,18,2

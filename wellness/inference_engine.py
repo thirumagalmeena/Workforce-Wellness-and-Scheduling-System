@@ -1,22 +1,10 @@
-"""
-Rule-Based Inference Engine.
-
-Analyses wellness state and fuzzy outputs to:
-  1. Trigger concrete actions: enforce_break, reduce_workload, rotation_needed, flag_rest
-  2. Generate personalized text recommendations
-  3. Run a non-diagnostic symptom checker (flags when rest may be needed)
-"""
-
 from wellness.wellness_model import DEFAULT_MAX_CONSECUTIVE_SHIFTS, DEFAULT_MAX_WEEKLY_HOURS
 
 
 # ─── Symptom Checker (non-diagnostic) ────────────────────────────────────────
 
 def symptom_check(ws: dict) -> dict:
-    """
-    Non-diagnostic check: flags observable work-pattern signals.
-    Returns a dict of {signal: bool, ...} and a summary message.
-    """
+
     signals = {
         "high_fatigue":           ws["fatigue"] >= 7.0,
         "high_stress":            ws["stress"] >= 7.0,
@@ -43,10 +31,6 @@ def symptom_check(ws: dict) -> dict:
 # ─── Action Triggers ─────────────────────────────────────────────────────────
 
 def derive_actions(ws: dict, fuzzy_out: dict) -> list:
-    """
-    Derive a list of action strings from wellness state + fuzzy output.
-    Actions: "enforce_break", "reduce_workload", "rotation_needed", "flag_rest", "no_action"
-    """
     actions = []
 
     if ws["consecutive_shifts"] >= DEFAULT_MAX_CONSECUTIVE_SHIFTS:
@@ -118,11 +102,7 @@ def generate_recommendations(ws: dict, fuzzy_out: dict, name: str) -> list:
 # ─── Batch Inference ─────────────────────────────────────────────────────────
 
 def run_inference_all(wellness_states: dict, fuzzy_results: list, employees: list) -> list:
-    """
-    Run full inference for all employees.
-    Returns list of dicts:
-      {employee_id, name, actions, recommendations, symptom_check}
-    """
+
     emp_names = {e["id"]: e["name"] for e in employees}
     fuzzy_map = {r["employee_id"]: r for r in fuzzy_results}
 

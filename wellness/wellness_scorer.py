@@ -1,27 +1,7 @@
-"""
-Wellness scoring engine.
-
-Score formula (0–100):
-  base = 100
-  - fatigue  * 4   (max penalty: 40)
-  - stress   * 3   (max penalty: 30)
-  + satisfaction * 2  (max bonus: 20)
-  - consecutive_shift_penalty
-  - overwork_penalty
-
-Tags: Excellent (80-100), Good (60-79), Fair (40-59), At Risk (<40)
-"""
-
 from wellness.wellness_model import DEFAULT_MAX_CONSECUTIVE_SHIFTS, DEFAULT_MAX_WEEKLY_HOURS
 
 
 def compute_wellness_score(ws: dict) -> dict:
-    """
-    Given a wellness state dict, return an enriched dict with:
-      - score (0–100 float)
-      - tag   (str)
-      - breakdown (dict of components)
-    """
     fatigue = ws["fatigue"]
     stress = ws["stress"]
     satisfaction = ws["satisfaction"]
@@ -76,10 +56,6 @@ def compute_wellness_score(ws: dict) -> dict:
 
 
 def score_all_employees(wellness_states: dict, employees: list) -> list:
-    """
-    Score every employee and attach their name.
-    Returns a list sorted by score ascending (worst first).
-    """
     emp_names = {e["id"]: e["name"] for e in employees}
     results = []
     for emp_id, ws in wellness_states.items():

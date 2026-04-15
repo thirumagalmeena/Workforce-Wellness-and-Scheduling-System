@@ -1,31 +1,15 @@
-"""
-Shift Rotation & Fairness Tracker.
-
-Tracks long-term task distribution across employees and computes a
-Gini-coefficient-based fairness score (0 = perfect equality, 1 = fully unfair).
-
-Also exposes a fairness_penalty() for integration with the A* scheduler heuristic.
-"""
-
-
 class FairnessTracker:
     def __init__(self, employees):
         self.employees = employees
         self.emp_ids = [e["id"] for e in employees]
-        # priority_load[emp_id] = sum of priority values assigned over all runs
         self.priority_load: dict[int, float] = {e: 0.0 for e in self.emp_ids}
-        # total_hours[emp_id] = total scheduled hours over all runs
         self.total_hours: dict[int, float] = {e: 0.0 for e in self.emp_ids}
-        # assignment history: list of {emp_id, task_id, priority, hours}
         self.history: list = []
 
     # ── Recording ────────────────────────────────────────────────────────────
 
     def record_assignments(self, schedule, tasks):
-        """
-        Update fairness history from a completed ScheduleState.
-        Call this after each scheduler run.
-        """
+
         task_priority = {t["id"]: t["priority"] for t in tasks}
         for task_id, (emp_id, start, end) in schedule.assignments.items():
             duration = end - start
@@ -43,7 +27,6 @@ class FairnessTracker:
 
     @staticmethod
     def _gini(values: list) -> float:
-        """Compute Gini coefficient for a list of non-negative values."""
         if not values or sum(values) == 0:
             return 0.0
         n = len(values)
@@ -56,13 +39,7 @@ class FairnessTracker:
     # ── Fairness Scores ───────────────────────────────────────────────────────
 
     def compute_fairness_score(self) -> dict:
-        """
-        Returns:
-          - gini_priority (0.0 = fair, 1.0 = totally unfair)
-          - gini_hours
-          - fairness_pct (0–100, higher = fairer)
-          - per_employee breakdown
-        """
+
         prio_vals  = [self.priority_load.get(e, 0.0) for e in self.emp_ids]
         hours_vals = [self.total_hours.get(e, 0.0)   for e in self.emp_ids]
 
@@ -92,11 +69,7 @@ class FairnessTracker:
     # ── Rotation Suggestions ─────────────────────────────────────────────────
 
     def get_rotation_suggestions(self) -> list:
-        """
-        Returns actionable rotation advice:
-          - Employees with priority_load above average → assign lighter tasks next
-          - Employees with priority_load below average → ready for heavier tasks
-        """
+
         loads = [self.priority_load.get(e, 0.0) for e in self.emp_ids]
         if not loads:
             return []

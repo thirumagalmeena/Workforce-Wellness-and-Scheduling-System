@@ -1,8 +1,3 @@
-"""
-EmployeeWellness data model.
-All numeric fields are on a 0–10 scale unless noted.
-"""
-
 DEFAULT_MAX_CONSECUTIVE_SHIFTS = 5   # flag rest if exceeded
 DEFAULT_MAX_WEEKLY_HOURS = 40        # hard policy cap
 
@@ -16,7 +11,6 @@ def make_wellness_state(
     weekly_hours: float = 0.0,
     high_priority_task_count: int = 0,
 ):
-    """Return a wellness state dict for one employee."""
     return {
         "employee_id": employee_id,
         "fatigue": max(0.0, min(10.0, fatigue)),
@@ -29,10 +23,7 @@ def make_wellness_state(
 
 
 def default_wellness_states(employees):
-    """
-    Generate default wellness states for a list of employees.
-    In a real deployment these would come from a database / HR system.
-    """
+
     states = {}
     for emp in employees:
         states[emp["id"]] = make_wellness_state(emp["id"])
@@ -40,13 +31,7 @@ def default_wellness_states(employees):
 
 
 def update_from_schedule(wellness_states, schedule, tasks):
-    """
-    After a scheduling run, derive wellness signals from the assignment:
-      - weekly_hours  += total hours assigned this run
-      - high_priority_task_count += # priority >= 4 tasks assigned
-      - consecutive_shifts += 1 for every employee who got at least one task
-      - fatigue / stress increase proportional to overwork
-    """
+
     task_priority = {t["id"]: t["priority"] for t in tasks}
 
     for task_id, (emp_id, start, end) in schedule.assignments.items():

@@ -2,7 +2,6 @@ import itertools
 import heapq
 from copy import deepcopy
 from typing import Optional
-from copy import deepcopy
 from core.state import ScheduleState
 from core.constraints import *
 from core.heuristics import schedule_cost
@@ -51,6 +50,7 @@ class AStarScheduler:
                 h = schedule_cost(new_state, self.employees, self.tasks)
                 heapq.heappush(open_list, (g + h, task_index + 1, next(self.counter), new_state))
                 continue
+
             # ──────────────────────────────────────────────────────────────────
             # Build all possible valid assignments for this task
             assigned_any = False
@@ -72,9 +72,6 @@ class AStarScheduler:
                     new_state = deepcopy(state)
                     new_state.add(task["id"], employee["id"], start, end)
 
-                    # IMPORTANT: In A*, f = g + h. 
-                    # We want to MINIMIZE cost.
-                    # g is negative of assignments, so more assignments = lower cost.
                     g = -len(new_state.assignments) * 1000  # heavy weight for assigning tasks
                     h = schedule_cost(new_state, self.employees, self.tasks)
                     f = g + h
@@ -82,9 +79,6 @@ class AStarScheduler:
                     heapq.heappush(open_list, (f, task_index + 1, next(self.counter), new_state))
                     assigned_any = True
 
-            # ALSO ALWAYS ALLOW SKIPPING THIS TASK
-            # This ensures we always find a valid path to the end, even if some tasks are dropped.
-            # The penalty for skipping is that it has a higher cost (fewer assignments).
             skip_state = deepcopy(state)
             g_skip = -len(skip_state.assignments) * 1000
             h_skip = schedule_cost(skip_state, self.employees, self.tasks)

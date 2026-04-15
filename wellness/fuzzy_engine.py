@@ -1,18 +1,3 @@
-"""
-Pure-Python Fuzzy Logic Engine (no external library).
-
-Uses triangular membership functions and Mamdani-style inference.
-
-Inputs  (0-10 scale):
-  - fatigue
-  - stress
-  - preference_match  (0: no match, 10: perfect match to preferred tasks)
-
-Outputs (0-1 scale):
-  - workload_reduction    (how much to lighten this employee's load)
-  - schedule_flexibility  (how flexible the schedule should be)
-"""
-
 # ─── Membership Functions ────────────────────────────────────────────────────
 
 def _trimf(x: float, a: float, b: float, c: float) -> float:
@@ -48,16 +33,11 @@ def _pref_high(x): return _trapf(x, 5, 8, 10, 10)
 # ─── Defuzzification (centroid via discrete integration) ─────────────────────
 
 def _defuzz_centroid(rules: list, universe=(0.0, 1.0), steps=100) -> float:
-    """
-    rules: list of (strength, output_center) tuples
-    Returns centroid of aggregated activation.
-    """
     lo, hi = universe
     step = (hi - lo) / steps
     num = 0.0
     denom = 0.0
     for xi in (lo + i * step for i in range(steps + 1)):
-        # Aggregate: max of all rule activations clipped to their output center
         agg = 0.0
         for strength, center in rules:
             # Singleton representation: step function at center
@@ -70,18 +50,7 @@ def _defuzz_centroid(rules: list, universe=(0.0, 1.0), steps=100) -> float:
 # ─── Main Engine ─────────────────────────────────────────────────────────────
 
 def evaluate(fatigue: float, stress: float, preference_match: float = 5.0) -> dict:
-    """
-    Evaluate fuzzy rules and return workload_reduction and schedule_flexibility.
 
-    Example rule set (18 rules covering major combinations):
-      R1: fatigue=HIGH  & stress=HIGH  → reduction=HIGH(0.9),  flex=HIGH(0.85)
-      R2: fatigue=HIGH  & stress=MED   → reduction=MED(0.6),   flex=HIGH(0.75)
-      R3: fatigue=MED   & stress=HIGH  → reduction=MED(0.55),  flex=HIGH(0.70)
-      R4: fatigue=LOW   & stress=LOW   → reduction=LOW(0.1),   flex=LOW(0.2)
-      R5: pref=LOW      & stress=MED   → reduction=MED(0.45),  flex=MED(0.5)
-      R6: fatigue=HIGH  & pref=LOW     → reduction=HIGH(0.85), flex=HIGH(0.80)
-      ... etc.
-    """
     f_low    = _low(fatigue)
     f_med    = _medium(fatigue)
     f_high   = _high(fatigue)
